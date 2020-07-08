@@ -16,19 +16,46 @@ namespace PSNR_o_meter
         Calculator calculator;
         PictureMeter metric;
 
+        int screenWidth;
+        int screenHeigth;
+        int pb2StartingX;
+        int pbStartingY;
+        int pbBaseWH;
+
         string[] allowedExt = { ".bmp", ".jpg", ".gif", ".jpeg", ".png", ".dib", ".jpe" };
 
         public MainScreen()
         {
             InitializeComponent();
             this.metric = new PSNRmetric();
+
+            this.SizeChanged += MainScreen_ResizeEnd;
+            this.screenWidth = Width;
+            this.screenHeigth = Height;
+
+            this.pbBaseWH = pictureBox1.Width;
+            this.pbStartingY = pictureBox2.Location.Y;
+            this.pb2StartingX = pictureBox2.Location.X;
+        }
+
+        private void MainScreen_ResizeEnd(object sender, EventArgs e)
+        {
+            var halfOvergrownWidth  = (this.Width - screenWidth) / 2;
+            var overgrownHeight = this.Height - screenHeigth;
+            this.pictureBox1.Width = pbBaseWH + halfOvergrownWidth;
+            this.pictureBox2.Width = pbBaseWH + halfOvergrownWidth;
+            this.pictureBox1.Height = pbBaseWH + overgrownHeight;
+            this.pictureBox2.Height = pbBaseWH + overgrownHeight;
+
+            this.pictureBox2.Location = new Point(pb2StartingX + halfOvergrownWidth, pictureBox2.Location.Y);
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
             calculator = new Calculator(new Bitmap(pictureBox1.Image), new Bitmap(pictureBox2.Image));
             var pictureMetrics = calculator.CalculatePSRN(metric);
-            foreach(var metric in pictureMetrics)
+            richTextBox1.Text = string.Empty;
+            foreach (var metric in pictureMetrics)
             {
                 richTextBox1.Text += metric.ToString() + Environment.NewLine;
             }
@@ -41,6 +68,7 @@ namespace PSNR_o_meter
             {
                 image = Image.FromFile(filename);
                 pictureBox1.Image = image;
+                richTextBox1.Text = string.Empty;
             }
         }
         private void PictureBox2_Click(object sender, EventArgs e)
@@ -51,6 +79,7 @@ namespace PSNR_o_meter
             {
                 image = Image.FromFile(filename);
                 pictureBox2.Image = image;
+                richTextBox1.Text = string.Empty;
             }
         }
 
@@ -87,20 +116,5 @@ namespace PSNR_o_meter
             this.Click -= WarningShown;
         }
         #endregion
-
-        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void tbWarnings_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void richTextBox1_TextChanged(object sender, EventArgs e)
-        {
-
-        }
     }
 }
