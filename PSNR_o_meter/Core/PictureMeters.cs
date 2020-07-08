@@ -14,10 +14,7 @@ namespace PSNR_o_meter.Core
 
     public class PSNRmetric : PictureMeter
     {
-        public PSNRmetric()
-        {
-            base.Metrics = new List<PictureMetric>(2);
-        }
+        public PSNRmetric() { }
 
         public override void MeterPictures(byte[,] left, byte[,] right)
         {
@@ -44,6 +41,8 @@ namespace PSNR_o_meter.Core
 
             var msq = summsquare / left.Length;
             var psnr = 10 * (float)Math.Log10(max * max / msq);
+
+            this.Metrics = new List<PictureMetric>(2);
             this.Metrics.Add(new PictureMetric("PSNR", psnr));
             this.Metrics.Add(new PictureMetric("Standard deviation", msq));
         }
