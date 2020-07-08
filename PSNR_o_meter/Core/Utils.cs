@@ -18,6 +18,7 @@ namespace PSNR_o_meter
             byte bytesPerPix = (byte)(data.Stride / data.Width);
 
             for (short x = 0; x < data.Width; ++x)
+            {
                 for (short y = 0; y < data.Height; ++y)
                 {
                     byte* pix = picStart + x * bytesPerPix + y * data.Stride;
@@ -26,15 +27,23 @@ namespace PSNR_o_meter
                     pix[1] = gray;
                     pix[0] = gray;
                 }
+            }
             bitmap.UnlockBits(data);
 
             return bitmap;
         }
+
         public static unsafe byte[,] RGBtoGrayscale(Bitmap bitmap)
         {
+            var format = bitmap.PixelFormat;
+            if (format != PixelFormat.Format32bppArgb)
+            {
+                throw new BadImageFormatException($"{format} is not supported by this prog!");
+            }
+
             byte[,] mapOfValues = new byte[bitmap.Width, bitmap.Height];
 
-            BitmapData data = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, bitmap.PixelFormat);
+            BitmapData data = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, format);
             byte* picStart = (byte*)data.Scan0.ToPointer();
             byte bytesPerPix = (byte)(data.Stride / data.Width);
 
@@ -56,14 +65,17 @@ namespace PSNR_o_meter
             byte b = RGBToGrayscalePixel(col);
             return Color.FromArgb(col.A, b, b, b);
         }
+
         static byte RGBToGrayscalePixel(Color col)
         {
             return (byte)(0.3 * col.R + 0.59 * col.G + 0.11 * col.B);
         }
+
         static unsafe byte RGBToGrayscalePixel(byte* pix)
         {
             return (byte)(0.3 * pix[1] + 0.59 * pix[2] + 0.11 * pix[3]);
         }
+        
         static unsafe byte RGBToGrayscalePixel(byte* pix, byte throwedBits)
         {
             byte r = (byte)(pix[1] >> throwedBits);
