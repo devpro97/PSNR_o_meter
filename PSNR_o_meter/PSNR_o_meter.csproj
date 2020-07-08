@@ -37,11 +37,13 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Core.cs" />
-    <Compile Include="Utils.cs" />
+    <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="System.Drawing" />
+    <Compile Include="Core\Calculator.cs" />
+    <Compile Include="Core\Models.cs" />
+    <Compile Include="Core\PictureMeters.cs" />
+    <Compile Include="Core\Utils.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
